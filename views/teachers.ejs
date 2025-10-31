@@ -1,9 +1,18 @@
 <!DOCTYPE html>
 <html>
-<head><title>Teacher Stream</title></head>
+<head>
+  <title>OBS Stream Setup</title>
+  <style>
+    body { font-family: sans-serif; text-align: center; margin-top: 50px; }
+    code { background: #f4f4f4; padding: 2px 6px; }
+  </style>
+</head>
 <body>
-    <h1>Start Streaming</h1>
-    <p>Use OBS or similar: Server URL: <%= streamUrl %></p>
-    <!-- Add form for stream key if dynamic -->
+  <h1>Start Streaming from OBS</h1>
+  <p><strong>Service:</strong> Custom...</p>
+  <p><strong>Server:</strong> <code><%= rtmpUrl %></code></p>
+  <p><strong>Stream Key:</strong> (leave blank)</p>
+  <hr>
+  <p>After you click <strong>Start Streaming</strong> in OBS, go to <a href="/viewer">Viewer Page</a></p>
 </body>
 </html>

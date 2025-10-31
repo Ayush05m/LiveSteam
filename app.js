@@ -1,22 +1,61 @@
 const express = require('express');
+const path = require('path');
+const NodeMediaServer = require('node-media-server');
+
 const app = express();
-const port = 3000;
+const PORT = 3000;
 
+// ===== 1. NODE MEDIA SERVER (RTMP → HLS) =====
+const config = {
+  rtmp: {
+    port: 1935,
+    chunk_size: 60000,
+    gop_cache: true,
+    ping: 30,
+    ping_timeout: 60
+  },
+  http: {
+    port: 8000,
+    allow_origin: '*',
+    mediaroot: './media'
+  },
+  trans: {
+    ffmpeg: '/usr/bin/ffmpeg',
+    tasks: [
+      {
+        app: 'live',
+        hls: true,
+        hlsFlags: '[hls_time=1:hls_list_size=3:hls_flags=delete_segments+omit_endlist]'
+      }
+    ]
+  }
+};
+
+const nms = new NodeMediaServer(config);
+nms.run();
+
+console.log('RTMP ingest → rtmp://35.244.31.40/live/mystream');
+console.log('HLS output → http://35.244.31.40:8000/live/mystream.m3u8');
+
+// ===== 2. EXPRESS WEB UI =====
 app.set('view engine', 'ejs');
-app.use(express.static('public'));  // For static files like JS/CSS
+app.set('views', path.join(__dirname, 'views'));
+app.use(express.static('public'));
 
-// Teacher page: Instructions to stream via RTMP
+const STREAM_KEY = 'mystream';
+
+// Teacher page
 app.get('/teacher', (req, res) => {
-    const streamKey = 'mystream';  // Generate dynamically or use auth
-    res.render('teacher', { streamUrl: `rtmp://your-server-ip/live/${streamKey}` });
+  const rtmpUrl = `rtmp://35.244.31.40/live/${STREAM_KEY}`;
+  res.render('teacher', { rtmpUrl });
 });
 
-// Viewer page: Embed HLS player
+// Viewer page
 app.get('/viewer', (req, res) => {
-    const streamKey = 'mystream';
-    res.render('viewer', { hlsUrl: `http://your-server-ip/hls/${streamKey}.m3u8` });
+  const hlsUrl = `http://35.244.31.40:8000/live/${STREAM_KEY}.m3u8`;
+  res.render('viewer', { hlsUrl });
 });
 
-app.listen(port, () => {
-    console.log(`App listening at http://localhost:${port}`);
+app.listen(PORT, '0.0.0.0', () => {
+  console.log(`Web UI → http://35.244.31.40:${PORT}`);
 });
