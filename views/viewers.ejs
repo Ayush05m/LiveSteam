@@ -1,0 +1,15 @@
+<!DOCTYPE html>
+<html>
+<head><title>Viewer</title></head>
+<body>
+    <h1>Live Stream</h1>
+    <video id="video" controls width="640" height="360"></video>
+    <script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
+    <script>
+        const video = document.getElementById('video');
+        const hls = new Hls();
+        hls.loadSource('<%= hlsUrl %>');
+        hls.attachMedia(video);
+    </script>
+</body>
+</html>
